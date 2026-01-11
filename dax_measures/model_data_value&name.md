@@ -1,0 +1,1 @@
+model_data_value&name = FORMAT(MAX('model_data'[value]), "0.00") & " " & MAX('indicator_name_model'[dimension])
