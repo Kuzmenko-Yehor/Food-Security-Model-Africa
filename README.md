@@ -82,6 +82,36 @@ Independent variables were grouped into four categories.
 - average annual rainfall (mm);
 - number of months per year affected by natural, technological, or other disasters.
 
+## Project Workflow
+### Step 1. Data Preparation
+After collecting and aggregating data from multiple sources, all indicators were consolidated into a **single structured Excel dataset**.
+The dataset is organized as a multi-sheet Excel file and includes the following sheets:
+- **model_data** - panel data for 54 African countries over 10 years, containing independent variables used in the analytical model;
+- **food_security_index_data** - panel data for 54 African countries over 10 years, containing indicators used for the construction of the custom Food Security Index;
+- **country_name** - mapping table with ISO-3 country codes and corresponding country names;
+- **indicator_name_index** - metadata table containing indicator codes used in the Food Security Index, their full names, units of measurement, and category assignment (Availability, Accessibility, Quality, Stability);
+- **indicator_name_model** - metadata table containing independent variables used in the analytical model, including full names, units of measurement, and category assignment (Economic, Social, Political, Ecological).
+
+### Step 2. Data Loading and Transformation in Power BI
+
+The consolidated Excel dataset was imported into Power BI and transformed using Power Query.
+This step prepares the data for index construction and analytical modeling.
+
+Transformation workflow:
+1. Load all sheets from the Excel file into Power Query.
+2. Assign correct data types to country identifiers, years, and numeric indicators.
+3. Reshape indicator tables **model_data** and **food_security_index_data** into a long format.
+4. Create separate transformed tables for index construction and analytical modeling.
+
+> Power Query (M) scripts used in this step are available in the `power_query/` directory.
+
+
+
+
+
+
+
+
 ## Data Sources
 The indicators used in this project were collected from internationally recognized and publicly available data sources.
 Each source was selected based on data coverage, methodological transparency, and relevance to food security analysis.
