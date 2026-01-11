@@ -103,7 +103,104 @@ Transformation workflow:
 3. Reshape indicator tables **model_data** and **food_security_index_data** into a long format.
 4. Create separate transformed tables for index construction and analytical modeling.
 
-> Power Query (M) scripts used in this step are available in the `power_query/` directory.
+> Power Query (M) scripts used in this step are available in the [`power_query/`](power_query/) directory.
+
+### Step 3. Exploratory Analysis of Independent Variables
+<img width="1324" height="741" alt="image" src="https://github.com/user-attachments/assets/30d2fc7e-5bc4-43d5-a9dd-90e86f94d3e2" />
+This dashboard is designed to analyze the temporal dynamics and geographic distribution of independent variables used in the food security modeling framework for African countries.
+
+It enables interactive selection of indicators across economic, social, political, and environmental categories, allowing users to explore trends over time, compare countries, and assess spatial patterns.
+
+**1. Dynamic Dashboard Title**
+
+<img width="957" height="54" alt="image" src="https://github.com/user-attachments/assets/3ab8531a-b319-4b8b-8834-6b045373cad7" />
+
+**Purpose:** displays a fully interactive dashboard title reflecting the selected indicator, geographic scope, and year.
+
+**Logic:** the title adapts to the filter context: when a single country is selected, it shows the indicator name, country, and year; when multiple countries are selected, the geographic scope is aggregated to Africa.
+
+**Data:** model_data, indicator_name_model, country_name.
+
+**DAX logic:** conditional text generation based on filter context using HASONEVALUE and SELECTEDVALUE.
+
+**2. Indicator Selector (Slicer)**
+
+**Purpose:** enables dynamic selection of independent variables by category (Economic, Social, Political, Ecological).
+
+**Logic:** slicers filter the fact table and dynamically change the context for all dependent visuals.
+
+**Data:** indicator_name_model.
+
+**3. Country Ranking (Bar Chart)**
+
+<img align="left" width="284" height="292" alt="image" src="https://github.com/user-attachments/assets/db9b0ae4-f716-446f-992b-9fa07e4dd57f" />
+
+**Purpose:** Compares countries based on the selected independent indicator for a chosen year, enabling relative performance assessment across countries.
+
+**Logic:** To ensure meaningful comparison across indicators with different units and directions of impact, country values are first transformed using indicator-level normalization.
+A min–max normalization is applied separately for each indicator, converting raw values to a standardized scale between 0 and 1.
+
+For indicators where higher values represent better outcomes, normalization is defined as:
+
+<div align="center">
+  
+***x_norm = 1 - (x - min(x)) / (max(x) - min(x))***
+  
+</div>
+
+For indicators where higher values represent worse outcomes, an inverted normalization is applied:	​
+
+<div align="center">
+  
+***x_norm = 1 - (x - min(x)) / (max(x) - min(x))***
+  
+</div>
+
+where ***xi*** denotes the value of the selected indicator for country ***i***, and ***min(x)***, ***max(x)*** represent the minimum and maximum values of the indicator across all countries.
+
+Indicators are classified into two groups:
+
+indicators where higher values represent better outcomes (e.g. GDP per capita, HDI, agricultural productivity);
+
+indicators where higher values represent worse outcomes (e.g. inflation, unemployment, conflict-related indicators).
+
+This transformation ensures that higher normalized values consistently indicate better relative performance.
+Countries are then dynamically ranked based on the normalized indicator values within the selected year and filter context.
+
+**Data:**
+model_data, country_name.
+
+**DAX logic:**
+Indicator-specific min–max normalization with conditional inversion, followed by dynamic ranking and context-aware sorting.
+
+4. Geographic Distribution (Map)
+
+- Purpose: visualizes the spatial distribution of the selected indicator across African countries.
+- Logic: country-level values are mapped using ISO-3 country codes.
+- Data: model_data, country_name.
+- DAX logic: aggregation at country level with geographic binding.
+
+
+4. Time Series Visualization (Line Chart)
+
+Purpose: displays temporal dynamics of the selected indicator across the full observation period (2014–2023).
+
+Logic: values are aggregated by year and adjusted to the current slicer context.
+
+Data: model_data, Date/Year dimension.
+
+DAX logic: time-aware aggregation and CAGR calculation.
+
+
+5. KPI Cards (Annual Average, CAGR)
+
+- Purpose: summarize the overall level and long-term trend of the selected indicator.
+- Logic: KPIs respond dynamically to indicator and time selections.
+- Data: model_data.
+- DAX logic: custom measures for averages and compound annual growth rates.
+
+
+> DAX measures used for this dashboard are available in the [`dax/`](dax/) directory.
 
 
 
