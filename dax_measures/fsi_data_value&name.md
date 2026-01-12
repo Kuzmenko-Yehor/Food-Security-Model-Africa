@@ -1,0 +1,1 @@
+fsi_data_value&name = FORMAT(MAX('food_security_index_data'[value]), 0.00) &   & MAX('indicator_name_index'[dimension])
