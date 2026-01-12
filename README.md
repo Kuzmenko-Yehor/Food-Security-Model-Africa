@@ -234,7 +234,7 @@ The CAGR value is formatted using a percentage scale and explicitly includes a p
 
 > DAX measures used for this dashboard are available in the [`dax/`](dax/) directory.
 
-### Step 4.Interactive Food Security Index Construction
+### Step 4. Interactive Food Security Index Construction
 
 <img width="1279" height="715" alt="image" src="https://github.com/user-attachments/assets/5b77784b-28d5-4d83-8ee5-9bb7e250fe05" />
 
@@ -246,24 +246,24 @@ Users can interactively define which indicators and dimensions are included in t
 
 **Dashboard structure and interaction logic**
 
-The dashboard consists of the following key components:
+  The dashboard consists of the following key components:
 
 - Indicator selection slicer
 
-A multi-select slicer allows users to choose which indicators are included in the index calculation.
+  A multi-select slicer allows users to choose which indicators are included in the index calculation.
 Indicators are organized by food security dimensions, enabling transparent and controlled model specification.
 
 - Geographic visualization (Map)
 
-Displays the resulting Food Security Index across African countries, allowing spatial comparison and identification of regional patterns.
+  Displays the resulting Food Security Index across African countries, allowing spatial comparison and identification of regional patterns.
 
 - Time series visualization (Line Chart)
 
-Shows the evolution of the constructed index over time for selected countries or aggregated regions.
+    Shows the evolution of the constructed index over time for selected countries or aggregated regions.
 
 - KPI cards
 
-Summarize the overall level and long-term trend of the constructed index using average values and compound annual growth rates (CAGR).
+  Summarize the overall level and long-term trend of the constructed index using average values and compound annual growth rates (CAGR).
 
 All visuals update dynamically based on indicator selection, country filters, and time context.
 
@@ -273,11 +273,11 @@ The Food Security Index is computed based on three core methodological principle
 
 **1. Indicator normalization**
 
-All indicators included in the index are normalized to a common scale [0,1] prior to aggregation.
+  All indicators included in the index are normalized to a common scale [0,1] prior to aggregation.
 
-This ensures comparability across indicators with different units of measurement and different directional effects.
+  This ensures comparability across indicators with different units of measurement and different directional effects.
 
-Indicators with a positive contribution to food security are scaled directly, while indicators with a negative contribution are inverted so that higher normalized values always represent better outcomes.
+  Indicators with a positive contribution to food security are scaled directly, while indicators with a negative contribution are inverted so that higher normalized values always represent better outcomes.
 
 **2. Dimensional structure**
 
@@ -313,52 +313,49 @@ This approach prevents dominance of dimensions with many indicators and allows u
 
 The Food Security Index for country i at time t is calculated as a weighted sum of normalized indicators:
 
-FSI(i, t) = sum over categories c [
-              sum over indicators j in category c (
-                w(c, j) × x_norm(i, t, j)
-              )
-            ]
-
 <div align="center">
-
-  FSI(i, t) = Σ over categories c [ Σ over indicators j in c ( w(c, j) × x_norm(i, t, j) ) ]
-
+  
+***FSI(i, t) = Σ_c Σ_j∈c [ (1 / (C × N_c)) × x_norm(i, t, j) ]***
+  
 </div>
 
 where:
 
-x_norm(i, t, j) is the normalized value of indicator j for country i at time t;
+***x_norm(i, t, j)*** is the normalized value of indicator ***j*** for country ***i*** at time ***t***;
 
-w(c, j) = 1 / (C × N_c) is the weight assigned to indicator j in category c;
+***w(c, j) = 1 / (C × N_c)*** is the weight assigned to indicator ***j*** in category ***c***;
 
-C is the number of selected categories;
+***C*** is the number of selected categories;
 
-N_c is the number of selected indicators within category c.
+***N_c*** is the number of selected indicators within category c.
 
 This formulation guarantees:
+- equal contribution of each selected food security dimension;
 
-equal contribution of each selected food security dimension;
+- flexibility with respect to indicator selection;
 
-flexibility with respect to indicator selection;
+- transparency and reproducibility of index results.
 
-transparency and reproducibility of index results.
-
-Analytical advantages of the approach
+**Analytical advantages of the approach**
 
 The interactive construction of the Food Security Index enables:
 
-sensitivity analysis with respect to indicator inclusion;
+- sensitivity analysis with respect to indicator inclusion;
 
-comparison of alternative index specifications;
+- comparison of alternative index specifications;
 
-transparent assessment of how individual indicators and dimensions influence overall food security outcomes;
+- transparent assessment of how individual indicators and dimensions influence overall food security outcomes;
 
-alignment between exploratory analysis (Step 3) and modeling stages (Step 5).
+- alignment between exploratory analysis (Step 3) and modeling stages (Step 5).
 
 Implementation note
 
-The index calculation logic is implemented using custom DAX measures that respond dynamically to filter context and slicer selections.
+The index calculation logic is implemented using custom DAX measures that respond dynamically to filter context and slicer selections and available in the [`dax/`](dax/) directory..
+
 The methodological description above reflects the conceptual logic of the index, independent of its technical implementation.
+
+### Step 5. Interactive Food Security Index Construction
+
 
 
 
