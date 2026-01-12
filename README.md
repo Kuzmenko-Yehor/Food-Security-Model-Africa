@@ -105,9 +105,27 @@ Transformation workflow:
 
 > Power Query (M) scripts used in this step are available in the [`power_query/`](power_query/) directory.
 
-### Step 3. Exploratory Analysis of Independent Variables
-<img width="1324" height="741" alt="image" src="https://github.com/user-attachments/assets/30d2fc7e-5bc4-43d5-a9dd-90e86f94d3e2" />
-This dashboard is designed to analyze the temporal dynamics and geographic distribution of independent variables used in the food security modeling framework for African countries.
+### Step 3. Exploratory Analysis of Independent Variables for Model and Indicators for Calculation of Food Security Index
+
+<table>
+  <tr>
+    <td>
+      <img width="650" alt="Dashboard 1"
+           src="https://github.com/user-attachments/assets/30d2fc7e-5bc4-43d5-a9dd-90e86f94d3e2">
+    </td>
+    <td>
+      <img width="650" alt="Dashboard 2"
+           src="https://github.com/user-attachments/assets/b996047d-d3c7-4af2-8fbf-763826059cf3">
+    </td>
+  </tr>
+</table>
+
+
+This step is implemented through two separate dashboards with an identical structure.
+One dashboard focuses on the independent variables used for analytical modeling, while the other covers the indicators used for constructing the Food Security Index.
+
+Both dashboards are designed to analyze the temporal dynamics and geographic distribution of food security–related indicators for African countries.
+They enable interactive exploration of indicator behavior over time, cross-country comparisons, and spatial patterns, providing a consistent analytical framework across both indicator groups.
 
 It enables interactive selection of indicators across economic, social, political, and environmental categories, allowing users to explore trends over time, compare countries, and assess spatial patterns.
 
@@ -123,17 +141,27 @@ It enables interactive selection of indicators across economic, social, politica
 
 **DAX logic:** conditional text generation based on filter context using HASONEVALUE and SELECTEDVALUE.
 
-**2. Indicator Selector (Slicer)**
+**2. Indicator and Time Selector (Slicer)**
 
-**Purpose:** enables dynamic selection of independent variables by category (Economic, Social, Political, Ecological).
+<img align="left" width="466" height="332" alt="image" src="https://github.com/user-attachments/assets/22a5f42a-afde-453e-83e3-1402a6f875fd" />
 
-**Logic:** slicers filter the fact table and dynamically change the context for all dependent visuals.
+**Purpose:** enable controlled selection of indicators and time periods to define a consistent analytical context for all visuals.
 
-**Data:** indicator_name_model.
+**Logic:** The indicator category slicer is configured for single selection only to ensure unambiguous indicator context.
 
-**3. Country Ranking (Bar Chart)**
+The time slicer is also restricted to single-year selection and uses the Tile layout (instead of Between) to guarantee correct alignment of values across visuals.
 
-<img align="left" width="284" height="292" alt="image" src="https://github.com/user-attachments/assets/db9b0ae4-f716-446f-992b-9fa07e4dd57f" />
+To preserve correct interpretation of trends and summary metrics, Edit Interactions are used to disable the influence of the time slicer on:
+
+- Time Series Visualization (Line Chart);
+
+- KPI Cards (Annual Average, CAGR).
+
+**Data:** indicator_name_model, model_data
+
+**3. Country Ranking (Bar Chart) & Geographic Distribution (Map)**
+
+<img align="left" width="466" height="251" alt="image" src="https://github.com/user-attachments/assets/1c49018e-14bd-4aaf-b506-85c032f5434a" />
 
 **Purpose:** Compares countries based on the selected independent indicator for a chosen year, enabling relative performance assessment across countries.
 
@@ -164,8 +192,12 @@ indicators where higher values represent better outcomes (e.g. GDP per capita, H
 
 indicators where higher values represent worse outcomes (e.g. inflation, unemployment, conflict-related indicators).
 
-This transformation ensures that higher normalized values consistently indicate better relative performance.
+<img align="left" width="466" height="328" alt="image" src="https://github.com/user-attachments/assets/6590f9a3-d4a6-45d8-875b-c328a617806e" />
+This transformation ensures that higher normalized values consistently indicate better relative performance.  
 Countries are then dynamically ranked based on the normalized indicator values within the selected year and filter context.
+
+To reinforce this interpretation visually, higher normalized values are displayed using positive color tones, while lower values are represented with negative color tones.  
+This behavior is implemented through bar and counrty color configuration settings in the visualization, as illustrated in the screenshot below.
 
 **Data:**
 model_data, country_name.
@@ -173,39 +205,160 @@ model_data, country_name.
 **DAX logic:**
 Indicator-specific min–max normalization with conditional inversion, followed by dynamic ranking and context-aware sorting.
 
-4. Geographic Distribution (Map)
-
-- Purpose: visualizes the spatial distribution of the selected indicator across African countries.
-- Logic: country-level values are mapped using ISO-3 country codes.
-- Data: model_data, country_name.
-- DAX logic: aggregation at country level with geographic binding.
-
-
 4. Time Series Visualization (Line Chart)
+<img align="left" width="466" height="124" alt="image" src="https://github.com/user-attachments/assets/812bfdce-6201-4780-a05f-145612464612" />
 
-Purpose: displays temporal dynamics of the selected indicator across the full observation period (2014–2023).
+**Purpose:** displays temporal dynamics of the selected indicator across the full observation period (2014–2023).
 
-Logic: values are aggregated by year and adjusted to the current slicer context.
+**Logic:** values are aggregated by year and adjusted to the current slicer context.
 
-Data: model_data, Date/Year dimension.
+**Data:** model_data
 
-DAX logic: time-aware aggregation and CAGR calculation.
-
+**DAX logic:** time-aware aggregation and CAGR calculation.
 
 5. KPI Cards (Annual Average, CAGR)
 
-- Purpose: summarize the overall level and long-term trend of the selected indicator.
-- Logic: KPIs respond dynamically to indicator and time selections.
-- Data: model_data.
-- DAX logic: custom measures for averages and compound annual growth rates.
+<img align="left" width="217" height="253" alt="image" src="https://github.com/user-attachments/assets/217c648c-6ee4-49db-96ea-6ff09e75889f" />
 
+**Purpose:** summarize the overall level and long-term trend of the selected indicator.
+
+**Logic:** KPI cards respond dynamically to indicator and time selections.
+To improve visual clarity and interpretability, the average annual value is displayed together with its corresponding unit of measurement, which adapts automatically based on the selected indicator and current filter context.
+
+For trend representation, the compound annual growth rate (CAGR) is calculated over the selected time horizon.
+The CAGR value is formatted using a percentage scale and explicitly includes a positive (+) or negative (–) sign, allowing users to immediately distinguish between increasing and decreasing trends.
+
+**Data:** model_data.
+
+**DAX logic:** context-aware measures for average annual values with dynamic unit labeling, and custom time-based measures for compound annual growth rates with sign-aware percentage formatting.
 
 > DAX measures used for this dashboard are available in the [`dax/`](dax/) directory.
 
+### Step 4.Interactive Food Security Index Construction
 
+<img width="1279" height="715" alt="image" src="https://github.com/user-attachments/assets/5b77784b-28d5-4d83-8ee5-9bb7e250fe05" />
 
+This step introduces a dedicated interactive dashboard for constructing a custom Food Security Index (FSI).
+The dashboard follows the same structural design as the exploratory dashboards in Step 3, ensuring consistency in visual interpretation and user experience.
 
+Unlike predefined composite indices, the Food Security Index in this project is fully user-driven.
+Users can interactively define which indicators and dimensions are included in the index calculation, allowing flexible analytical scenarios and sensitivity analysis.
 
+**Dashboard structure and interaction logic**
+
+The dashboard consists of the following key components:
+
+- Indicator selection slicer
+
+A multi-select slicer allows users to choose which indicators are included in the index calculation.
+Indicators are organized by food security dimensions, enabling transparent and controlled model specification.
+
+- Geographic visualization (Map)
+
+Displays the resulting Food Security Index across African countries, allowing spatial comparison and identification of regional patterns.
+
+- Time series visualization (Line Chart)
+
+Shows the evolution of the constructed index over time for selected countries or aggregated regions.
+
+- KPI cards
+
+Summarize the overall level and long-term trend of the constructed index using average values and compound annual growth rates (CAGR).
+
+All visuals update dynamically based on indicator selection, country filters, and time context.
+
+**Index construction methodology**
+
+The Food Security Index is computed based on three core methodological principles:
+
+**1. Indicator normalization**
+
+All indicators included in the index are normalized to a common scale [0,1] prior to aggregation.
+
+This ensures comparability across indicators with different units of measurement and different directional effects.
+
+Indicators with a positive contribution to food security are scaled directly, while indicators with a negative contribution are inverted so that higher normalized values always represent better outcomes.
+
+**2. Dimensional structure**
+
+Indicators are grouped into four conceptual food security dimensions:
+
+- Availability - physical supply of food;
+
+- Accessibility - economic and institutional access to food;
+
+- Quality - nutritional outcomes and dietary adequacy;
+
+- Stability - resilience of food systems over time.
+
+This structure aligns the index with widely accepted food security frameworks and ensures interpretability of results.
+
+**3. Adaptive weighting scheme**
+
+The weighting system is dynamic and selection-dependent, rather than fixed.
+
+- Each selected food security dimension receives equal total weight.
+
+- Within each dimension, the total weight is evenly distributed among the selected indicators belonging to that dimension.
+
+- The final weight of each indicator therefore depends on:
+
+  - the number of selected dimensions;
+
+  - the number of indicators selected within each dimension.
+
+This approach prevents dominance of dimensions with many indicators and allows users to explore alternative index specifications transparently.
+
+**General index formulation**
+
+The Food Security Index for country i at time t is calculated as a weighted sum of normalized indicators:
+
+FSI(i, t) = sum over categories c [
+              sum over indicators j in category c (
+                w(c, j) × x_norm(i, t, j)
+              )
+            ]
+
+<div align="center">
+
+  FSI(i, t) = Σ over categories c [ Σ over indicators j in c ( w(c, j) × x_norm(i, t, j) ) ]
+
+</div>
+
+where:
+
+x_norm(i, t, j) is the normalized value of indicator j for country i at time t;
+
+w(c, j) = 1 / (C × N_c) is the weight assigned to indicator j in category c;
+
+C is the number of selected categories;
+
+N_c is the number of selected indicators within category c.
+
+This formulation guarantees:
+
+equal contribution of each selected food security dimension;
+
+flexibility with respect to indicator selection;
+
+transparency and reproducibility of index results.
+
+Analytical advantages of the approach
+
+The interactive construction of the Food Security Index enables:
+
+sensitivity analysis with respect to indicator inclusion;
+
+comparison of alternative index specifications;
+
+transparent assessment of how individual indicators and dimensions influence overall food security outcomes;
+
+alignment between exploratory analysis (Step 3) and modeling stages (Step 5).
+
+Implementation note
+
+The index calculation logic is implemented using custom DAX measures that respond dynamically to filter context and slicer selections.
+The methodological description above reflects the conceptual logic of the index, independent of its technical implementation.
 
 
 
