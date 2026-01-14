@@ -152,7 +152,6 @@ The time slicer is also restricted to single-year selection and uses the Tile la
 To preserve correct interpretation of trends and summary metrics, Edit Interactions are used to disable the influence of the time slicer on:
 
 - Time Series Visualization (Line Chart);
-
 - KPI Cards (Annual Average, CAGR).
 
 **Data:** indicator_name_model, model_data
@@ -282,13 +281,10 @@ The Food Security Index is computed based on three core methodological principle
 Indicators are grouped into four conceptual food security dimensions:
 
 - Availability - physical supply of food;
-
 - Accessibility - economic and institutional access to food;
-
 - Quality - nutritional outcomes and dietary adequacy;
-
 - Stability - resilience of food systems over time.
-
+- 
 This structure aligns the index with widely accepted food security frameworks and ensures interpretability of results.
 
 **3. Adaptive weighting scheme**
@@ -296,13 +292,9 @@ This structure aligns the index with widely accepted food security frameworks an
 The weighting system is dynamic and selection-dependent, rather than fixed.
 
 - Each selected food security dimension receives equal total weight.
-
 - Within each dimension, the total weight is evenly distributed among the selected indicators belonging to that dimension.
-
 - The final weight of each indicator therefore depends on:
-
   - the number of selected dimensions;
-
   - the number of indicators selected within each dimension.
 
 This approach prevents dominance of dimensions with many indicators and allows users to explore alternative index specifications transparently.
@@ -319,19 +311,14 @@ The Food Security Index for country i at time t is calculated as a weighted sum 
 
 where:
 
-***x_norm(i, t, j)*** is the normalized value of indicator ***j*** for country ***i*** at time ***t***;
-
-***w(c, j) = 1 / (C × N_c)*** is the weight assigned to indicator ***j*** in category ***c***;
-
-***C*** is the number of selected categories;
-
-***N_c*** is the number of selected indicators within category c.
+- ***x_norm(i, t, j)*** is the normalized value of indicator ***j*** for country ***i*** at time ***t***;
+- ***w(c, j) = 1 / (C × N_c)*** is the weight assigned to indicator ***j*** in category ***c***;
+- ***C*** is the number of selected categories;
+- ***N_c*** is the number of selected indicators within category c.
 
 This formulation guarantees:
 - equal contribution of each selected food security dimension;
-
 - flexibility with respect to indicator selection;
-
 - transparency and reproducibility of index results.
 
 **Analytical advantages of the approach**
@@ -339,11 +326,8 @@ This formulation guarantees:
 The interactive construction of the Food Security Index enables:
 
 - sensitivity analysis with respect to indicator inclusion;
-
 - comparison of alternative index specifications;
-
 - transparent assessment of how individual indicators and dimensions influence overall food security outcomes;
-
 - alignment between exploratory analysis (Step 3) and modeling stages (Step 5).
 
 ### Implementation note
@@ -362,7 +346,6 @@ All transformations are performed within Power BI using calculated tables to ens
 The goal of this step is to construct a model-ready dataset that combines:
 
 - independent variables used as explanatory factors in the model;
-
 - the Food Security Index, used as the dependent variable.
 
 This step is required because the Python visual used in subsequent analysis does not correctly respond to filter context when data originates from multiple tables, even if those tables are related or combined through the data model.
@@ -378,7 +361,6 @@ This structure enables a seamless and technically robust transition from explora
 A single analytical table is created by merging two data sources:
 
 - model input variables from model_data;
-
 - normalized Food Security Index values from food_security_index_data.
 
 Both sources are aligned by country (ISO-3 code) and year, and combined into a long-format table.
@@ -386,7 +368,6 @@ Both sources are aligned by country (ISO-3 code) and year, and combined into a l
 An additional field (model_type) is used to distinguish between:
 
 - model - independent variables;
-
 - index - the Food Security Index used as the dependent variable.
 
 To ensure numerical stability and comparability across indicators, selected variables are rescaled during the transformation process (e.g. percentage-based indicators and large-magnitude variables).
@@ -398,21 +379,17 @@ A separate indicator directory table is created to support interactive control o
 This table consolidates:
 
 - independent variables used for model construction;
-
 - indicators used to calculate the Food Security Index.
 
 Each indicator is labeled with:
 
 - its readable name;
-
 - thematic category;
-
 - source type (model factor vs. index component).
 
 This structure allows the same slicer logic to be used consistently across:
 
 - model variable selection;
-
 - index-based dependent variable selection.
 
 ### Output:
@@ -420,9 +397,7 @@ This structure allows the same slicer logic to be used consistently across:
 As a result of this step:
 
 - a clean, unified panel dataset is produced for regression analysis;
-
 - indicators are fully traceable by category and role in the model;
-
 - the dataset is ready for use in downstream modeling, including elasticity estimation and scenario analysis.
 
 ### Implementation note: 
@@ -567,13 +542,9 @@ Conceptually, the model can be written as:
 where:
 
 - ***FSI(i, t)*** is the Food Security Index for country ***i*** in year ***t***;
-
 - ***X(k, i, t)*** are standardized independent variables;
-
 - ***μ(i)*** represents country-specific effects;
-
 - ***λ(t)*** represents year effects;
-
 - ***ε(i, t)*** is the idiosyncratic error term.
 
 ```python
@@ -584,7 +555,6 @@ model = RandomEffects(y, X)
 After model estimation:
 
 - fitted values are compared with observed values;
-
 - a small adjustment is applied to the intercept to align predicted and observed index levels.
 
 This step improves interpretability of the estimated equation without affecting slope coefficients or relative effect sizes.
@@ -628,7 +598,6 @@ if not required_cols.issubset(df.columns):
 The data is then split into:
 
 - index components (**model_type == "index"**), used to reconstruct the dependent variable;
-
 - model factors (**model_type == "model"**), used as regressors.
 
 ```python
@@ -988,9 +957,7 @@ model.f_pvalue
 These metrics summarize:
 
 - the proportion of variance explained by the model;
-
 - the adjusted explanatory power accounting for model complexity;
-
 - the overall statistical significance of the regression.
 
 5. ANOVA decomposition
@@ -998,7 +965,6 @@ These metrics summarize:
 An Analysis of Variance (ANOVA) table is constructed to decompose total variation in the Food Security Index into:
 
 - variation explained by the regression model;
-
 - unexplained (residual) variation.
 
 ```python
@@ -1020,15 +986,195 @@ ax.table(...)
 
 This presentation enables users to:
 
-inspect model quality at a glance;
+- inspect model quality at a glance;
 
-compare explained vs. unexplained variance;
+- compare explained vs. unexplained variance;
 
-assess overall model significance without leaving the analytical interface.
+- assess overall model significance without leaving the analytical interface.
 
+### Model Coefficients
 
+<img align="left" width="466" height="503" alt="image" src="https://github.com/user-attachments/assets/e0595807-0311-4ddf-8692-765688a1a76d" />
 
+**Purpose:**
 
+Provide a detailed statistical summary of the estimated panel data model, allowing evaluation of the magnitude, direction, and statistical significance of each explanatory factor.
+
+**Logic:**
+
+1. Reconstruction of the dependent variable
+
+The Food Security Index (fsi_gen) is dynamically reconstructed using normalized index components and category-based weights to ensure consistency with all previous analytical steps.
+
+```python
+df_index = df[df['model_type'] == 'index'].copy()
+```
+
+Weighted indicator contributions are aggregated at the country–year level:
+
+```python
+fsi_df = df_index.groupby(['iso_3', 'year'])['fsi_part'].sum()
+```
+
+2. Preparation and standardization of regressors
+
+Selected independent variables are reshaped into a wide panel structure and merged with the reconstructed index.
+
+```python
+eco_wide = df_model.pivot_table(
+    index=['iso_3', 'year'],
+    columns='indicator',
+    values='value'
+)
+data = pd.merge(fsi_df, eco_wide, on=['iso_3', 'year'], how='inner')
+```
+
+All regressors are standardized using z-score normalization to ensure coefficient comparability:
+
+```python
+data_scaled[X_cols] = scaler.fit_transform(data[X_cols])
+```
+
+3. Panel model estimation
+
+The model is estimated as a Random Effects panel data model with country-specific effects.
+
+```python
+model = RandomEffects(y, X)
+res = model.fit()
+```
+
+This specification captures unobserved heterogeneity across countries while preserving cross-sectional and temporal variation.
+
+4. Extraction of coefficient statistics
+
+Estimated parameters and their associated statistics are extracted directly from the fitted model object:
+
+```python
+res.params
+res.std_errors
+res.tstats
+res.pvalues
+```
+
+These metrics quantify:
+
+- the direction and magnitude of each effect;
+- estimation uncertainty;
+- statistical significance.
+
+5. Confidence interval construction
+
+Confidence intervals for each coefficient are computed to provide a range of plausible values:
+
+```python
+conf_int = res.conf_int()
+```
+
+Lower and upper bounds are added to the summary table to support inferential interpretation.
+
+6. Tabular visualization
+
+All coefficient statistics are compiled into a formatted table and rendered directly within the dashboard:
+
+```python
+summary_df = pd.DataFrame({...})
+ax.table(...)
+```
+
+The table includes:
+
+- estimated coefficients;
+- standard errors;
+- t-statistics and p-values;
+- confidence intervals.
+
+This presentation enables clear and compact interpretation of model results within the interactive analytical environment.
+
+### Elasticity Coefficients Estimation
+
+<img align="left" width="466" height="470" alt="image" src="https://github.com/user-attachments/assets/1fe1968a-8c4d-421f-b60f-6be58b5774a2" />
+
+**Purpose:**
+
+Quantify the relative sensitivity of the Food Security Index to changes in each independent variable, allowing comparison of effect magnitudes across indicators measured in different units.
+
+**Logic:**
+
+1. Consistent model reconstruction
+
+Elasticity coefficients are computed using the same reconstructed Food Security Index and panel model specification applied in previous analytical steps.
+
+```python
+df_index = df[df['model_type'] == 'index'].copy()
+```
+
+Category-based weights are applied to rebuild the dependent variable:
+
+```python
+weights = {cat: (1 / n_cat) / ...}
+```
+
+Weighted indicator values are aggregated at the country–year level:
+
+```python
+fsi_df = df_index.groupby(['iso_3', 'year'])['fsi_part'].sum()
+```
+
+2. Preparation and estimation of the panel model
+
+Independent variables are reshaped, standardized, and combined with the reconstructed index.
+
+```python
+eco_wide = df_model.pivot_table(...)
+data = pd.merge(fsi_df, eco_wide, on=['iso_3', 'year'])
+```
+
+The Random Effects panel model is estimated as:
+
+```python
+model = RandomEffects(y, X)
+res = model.fit()
+```
+
+This ensures that elasticity estimates are directly derived from the same model used for coefficient estimation.
+
+3. Elasticity calculation
+
+Elasticity for each independent variable is calculated using the standard elasticity formula:
+
+<div align="center">
+  
+***Elasticity(k) = β(k)×(X̄(k)/FSĪ)***
+
+</div>​
+
+where:
+
+- ***β(k)*** is the estimated coefficient of variable ***k***;
+- ***X̄(k)*** is the mean value of variable ***k***;
+- ***FSĪ*** is the mean value of the Food Security Index.
+
+This logic is implemented as:
+
+```python
+elasticity = beta * (mean_x / mean_fsi)
+```
+
+4. Ranking and visualization
+
+Elasticity coefficients are compiled into a table, rounded for readability, and sorted in descending order:
+
+```python
+elasticity_df = elasticity_df.sort_values(by='Coefficient of Elasticity', ascending=False)
+```
+
+The resulting table highlights:
+
+- which factors have the strongest relative influence on food security;
+- the direction and magnitude of each effect.
+
+The elasticity table is rendered directly within the dashboard to support intuitive comparison across variables.
 
 # Data Sources
 The indicators used in this project were collected from internationally recognized and publicly available data sources.
