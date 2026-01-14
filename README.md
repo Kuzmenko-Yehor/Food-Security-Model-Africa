@@ -1,63 +1,61 @@
 # Food Security Model in Africa
 
-## Introduction
-
-### About the Project
+## About the Project
 This project focuses on analyzing food security in African countries based on socio-economic, political, and ecological indicators.
 
-### Objectives:
+## Objectives:
 To develop an interactive analytical tool for exploring and modeling food security levels across African countries and regions.
 
-### Goals:
+## Goals:
 To provide a flexible analytical framework that enables users to:
 - compare countries and time periods;
 - analyze indicators that contribute to the food security index and are used in model construction;
 - dynamically calculate a food security index based on selected indicators;
 - explore the impact of individual factors on a dynamically constructed food security index.
 
-### Methodology & Tools:
+## Methodology & Tools:
 - **Power BI** - interactive dashboards and data visualization  
 - **Python** - data processing, calculations, and statistical modeling  
 - **Excel** - data preparation and structuring  
 - **Statistical methods** - index construction, relationships, and elasticity coefficients  
 
-## Data Description
+# Data Description
 
 The project is based on a panel dataset covering 54 African countries over a 10-year period (2014–2023).
 The data is organized into two conceptually distinct components:
 1) indicators used for the construction of the Food Security Index (FSI), and
 2) indicators used for modeling the determinants of food security.
 
-### 1. Data for Food Security Index Construction
+## 1. Data for Food Security Index Construction
 
 Indicators used for constructing the composite Food Security Index (FSI) were selected to reflect the core dimensions of food security and grouped into five categories.
 
-### Food Availability:
+## Food Availability:
 - average dietary energy supply (kcal per capita per day);
 - average protein supply (g per capita per day);
 - average fat supply (g per capita per day);
 - cereal import dependency ratio (%).
 
-### Food Access:
+## Food Access:
 - GDP per capita (USD);
 - share of food imports in total imports (%);
 - political stability and absence of violence/terrorism index;
 - share of population with access to basic drinking water services (%).
 
-### Food Quality:
+## Food Quality:
 - prevalence of stunting among children under five (%);
 - prevalence of obesity (% of total population).
 
-### Stability and Resilience:
+## Stability and Resilience:
 - variability of food supply (kcal per capita per day);
 - coefficient of variation of caloric intake;
 - retail-level food losses (%);
 - share of irrigated arable land (%).
 
-### Undernourishment (Summary Indicator)
+## Undernourishment (Summary Indicator)
 - prevalence of undernourishment (% of population), reported by the FAO.
 
-### 2. Data for Econometric and Analytical Modeling
+## 2. Data for Econometric and Analytical Modeling
 
 To analyze the determinants of food security, an analytical model was developed using the Food Security Index (FSI) as the dependent variable.
 Independent variables were grouped into four categories.
@@ -82,8 +80,8 @@ Independent variables were grouped into four categories.
 - average annual rainfall (mm);
 - number of months per year affected by natural, technological, or other disasters.
 
-## Project Workflow
-### Step 1. Data Preparation
+# Project Workflow
+## Step 1. Data Preparation
 After collecting and aggregating data from multiple sources, all indicators were consolidated into a **single structured Excel dataset**.
 The dataset is organized as a multi-sheet Excel file and includes the following sheets:
 - **model_data** - panel data for 54 African countries over 10 years, containing independent variables used in the analytical model;
@@ -92,7 +90,7 @@ The dataset is organized as a multi-sheet Excel file and includes the following 
 - **indicator_name_index** - metadata table containing indicator codes used in the Food Security Index, their full names, units of measurement, and category assignment (Availability, Accessibility, Quality, Stability);
 - **indicator_name_model** - metadata table containing independent variables used in the analytical model, including full names, units of measurement, and category assignment (Economic, Social, Political, Ecological).
 
-### Step 2. Data Loading and Transformation in Power BI
+## Step 2. Data Loading and Transformation in Power BI
 
 The consolidated Excel dataset was imported into Power BI and transformed using Power Query.
 This step prepares the data for index construction and analytical modeling.
@@ -105,7 +103,7 @@ Transformation workflow:
 
 > Power Query (M) scripts used in this step are available in the [`power_query/`](power_query/) directory.
 
-### Step 3. Exploratory Analysis of Independent Variables for Model and Indicators for Calculation of Food Security Index
+## Step 3. Exploratory Analysis of Independent Variables for Model and Indicators for Calculation of Food Security Index
 
 <table>
   <tr>
@@ -129,7 +127,7 @@ They enable interactive exploration of indicator behavior over time, cross-count
 
 It enables interactive selection of indicators across economic, social, political, and environmental categories, allowing users to explore trends over time, compare countries, and assess spatial patterns.
 
-**1. Dynamic Dashboard Title**
+### **1. Dynamic Dashboard Title**
 
 <img width="957" height="54" alt="image" src="https://github.com/user-attachments/assets/3ab8531a-b319-4b8b-8834-6b045373cad7" />
 
@@ -141,7 +139,7 @@ It enables interactive selection of indicators across economic, social, politica
 
 **DAX logic:** conditional text generation based on filter context using HASONEVALUE and SELECTEDVALUE.
 
-**2. Indicator and Time Selector (Slicer)**
+### **2. Indicator and Time Selector (Slicer)**
 
 <img align="left" width="466" height="332" alt="image" src="https://github.com/user-attachments/assets/22a5f42a-afde-453e-83e3-1402a6f875fd" />
 
@@ -159,7 +157,7 @@ To preserve correct interpretation of trends and summary metrics, Edit Interacti
 
 **Data:** indicator_name_model, model_data
 
-**3. Country Ranking (Bar Chart) & Geographic Distribution (Map)**
+### **3. Country Ranking (Bar Chart) & Geographic Distribution (Map)**
 
 <img align="left" width="466" height="251" alt="image" src="https://github.com/user-attachments/assets/1c49018e-14bd-4aaf-b506-85c032f5434a" />
 
@@ -205,7 +203,7 @@ model_data, country_name.
 **DAX logic:**
 Indicator-specific min–max normalization with conditional inversion, followed by dynamic ranking and context-aware sorting.
 
-4. Time Series Visualization (Line Chart)
+### **4. Time Series Visualization (Line Chart)**
 <img align="left" width="466" height="124" alt="image" src="https://github.com/user-attachments/assets/812bfdce-6201-4780-a05f-145612464612" />
 
 **Purpose:** displays temporal dynamics of the selected indicator across the full observation period (2014–2023).
@@ -216,7 +214,7 @@ Indicator-specific min–max normalization with conditional inversion, followed 
 
 **DAX logic:** time-aware aggregation and CAGR calculation.
 
-5. KPI Cards (Annual Average, CAGR)
+### **5. KPI Cards (Annual Average, CAGR)**
 
 <img align="left" width="217" height="253" alt="image" src="https://github.com/user-attachments/assets/217c648c-6ee4-49db-96ea-6ff09e75889f" />
 
@@ -234,7 +232,7 @@ The CAGR value is formatted using a percentage scale and explicitly includes a p
 
 > DAX measures used for this dashboard are available in the [`dax/`](dax/) directory.
 
-### Step 4. Interactive Food Security Index Construction
+## Step 4. Interactive Food Security Index Construction
 
 <img width="1279" height="715" alt="image" src="https://github.com/user-attachments/assets/5b77784b-28d5-4d83-8ee5-9bb7e250fe05" />
 
@@ -244,9 +242,9 @@ The dashboard follows the same structural design as the exploratory dashboards i
 Unlike predefined composite indices, the Food Security Index in this project is fully user-driven.
 Users can interactively define which indicators and dimensions are included in the index calculation, allowing flexible analytical scenarios and sensitivity analysis.
 
-**Dashboard structure and interaction logic**
+### **Dashboard structure and interaction logic**
 
-  The dashboard consists of the following key components:
+The dashboard consists of the following key components:
 
 - Indicator selection slicer
 
@@ -267,7 +265,7 @@ Indicators are organized by food security dimensions, enabling transparent and c
 
 All visuals update dynamically based on indicator selection, country filters, and time context.
 
-**Index construction methodology**
+### **Index construction methodology**
 
 The Food Security Index is computed based on three core methodological principles:
 
@@ -309,7 +307,7 @@ The weighting system is dynamic and selection-dependent, rather than fixed.
 
 This approach prevents dominance of dimensions with many indicators and allows users to explore alternative index specifications transparently.
 
-**General index formulation**
+### **General index formulation**
 
 The Food Security Index for country i at time t is calculated as a weighted sum of normalized indicators:
 
@@ -348,22 +346,98 @@ The interactive construction of the Food Security Index enables:
 
 - alignment between exploratory analysis (Step 3) and modeling stages (Step 5).
 
-Implementation note
+### Implementation note
 
-The index calculation logic is implemented using custom DAX measures that respond dynamically to filter context and slicer selections and available in the [`dax/`](dax/) directory..
+The index calculation logic is implemented using custom DAX measures that respond dynamically to filter context and slicer selections and available in the [`dax/`](dax/) directory.
 
 The methodological description above reflects the conceptual logic of the index, independent of its technical implementation.
 
-### Step 5. Interactive Food Security Index Construction
+## Step 5. Data Preparation for Regression Analysis
+This step focuses on preparing a unified and consistent dataset for subsequent regression and econometric analysis.
+
+All transformations are performed within Power BI using calculated tables to ensure full integration with the interactive analytical workflow. DAX formulas for calculated table are lockated in the [`dax/`](dax/) directory 
+
+### Purpose:
+
+The goal of this step is to construct a model-ready dataset that combines:
+
+- independent variables used as explanatory factors in the model;
+
+- the Food Security Index, used as the dependent variable.
+
+This step is required because the Python visual used in subsequent analysis does not correctly respond to filter context when data originates from multiple tables, even if those tables are related or combined through the data model.
+
+To ensure that all filters (indicator selection, country, and time) are consistently applied within the Python visual, all relevant variables must be explicitly consolidated into a single analytical table.
+
+This structure enables a seamless and technically robust transition from exploratory analysis to statistical modeling.
+
+### Logic:
+
+**1. Unified analytical dataset**
+
+A single analytical table is created by merging two data sources:
+
+- model input variables from model_data;
+
+- normalized Food Security Index values from food_security_index_data.
+
+Both sources are aligned by country (ISO-3 code) and year, and combined into a long-format table.
+
+An additional field (model_type) is used to distinguish between:
+
+- model - independent variables;
+
+- index - the Food Security Index used as the dependent variable.
+
+To ensure numerical stability and comparability across indicators, selected variables are rescaled during the transformation process (e.g. percentage-based indicators and large-magnitude variables).
+
+**2. Indicator directory for model control**
+
+A separate indicator directory table is created to support interactive control of model specification.
+
+This table consolidates:
+
+- independent variables used for model construction;
+
+- indicators used to calculate the Food Security Index.
+
+Each indicator is labeled with:
+
+- its readable name;
+
+- thematic category;
+
+- source type (model factor vs. index component).
+
+This structure allows the same slicer logic to be used consistently across:
+
+- model variable selection;
+
+- index-based dependent variable selection.
+
+### Output:
+
+As a result of this step:
+
+- a clean, unified panel dataset is produced for regression analysis;
+
+- indicators are fully traceable by category and role in the model;
+
+- the dataset is ready for use in downstream modeling, including elasticity estimation and scenario analysis.
+
+### Implementation note: 
+
+The transformations described above are implemented using calculated tables and conditional logic.
+The conceptual structure of the prepared dataset is independent of the specific implementation syntax and can be reproduced in other analytical environments.
+
+## Step 6. 
 
 
-
-
-## Data Sources
+# Data Sources
 The indicators used in this project were collected from internationally recognized and publicly available data sources.
 Each source was selected based on data coverage, methodological transparency, and relevance to food security analysis.
 
-### [FAO — FAOSTAT: Suite of Food Security Indicators](https://www.fao.org/faostat/en/#data/FS)
+## [FAO — FAOSTAT: Suite of Food Security Indicators](https://www.fao.org/faostat/en/#data/FS)
 
 Indicators used (Food Security Index construction):
 - Average dietary energy supply (kcal per capita per day);
@@ -378,21 +452,21 @@ Indicators used (Food Security Index construction):
 - Prevalence of stunting among children under five (%);
 - Prevalence of obesity (% of total population).
 
-### [International Trade Centre — Trade Map](https://www.trademap.org/Index.aspx)
+## [International Trade Centre — Trade Map](https://www.trademap.org/Index.aspx)
 
 Indicators used (economic and trade-related factors):
 - Share of food imports in total imports (%);
 - Ratio of food imports to food exports;
 - Food imports per capita (USD).
 
-### [Observatory of Economic Complexity](https://oec.world/en)
+## [Observatory of Economic Complexity](https://oec.world/en)
 
 Indicators used (trade structure and dependency):
 - Share of food imports in total imports (%);
 - Ratio of food imports to food exports;
 - Food imports per capita (USD).
 
-### [Our World in Data](https://ourworldindata.org/grapher/average–precipitation–per–year)
+## [Our World in Data](https://ourworldindata.org/grapher/average–precipitation–per–year)
 
 Indicators used (political and environmental factors):
 - Presence of internal or external conflicts;
@@ -402,7 +476,7 @@ Indicators used (political and environmental factors):
 - Average annual precipitation (mm);
 - Number of months per year affected by natural, technological, or other disasters.
 
-### [World Bank](https://www.worldbank.org/ext/en/who–we–are)
+## [World Bank](https://www.worldbank.org/ext/en/who–we–are)
 
 Indicators used (economic and social factors):
 - GDP per capita (USD);
