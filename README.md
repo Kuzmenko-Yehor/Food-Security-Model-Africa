@@ -90,7 +90,55 @@ The dataset is organized as a multi-sheet Excel file and includes the following 
 - **indicator_name_index** - metadata table containing indicator codes used in the Food Security Index, their full names, units of measurement, and category assignment (Availability, Accessibility, Quality, Stability);
 - **indicator_name_model** - metadata table containing independent variables used in the analytical model, including full names, units of measurement, and category assignment (Economic, Social, Political, Ecological).
 
-## Step 2. Data Loading and Transformation in Power BI
+## Step 2. Data Model (Power BI Model View)
+<img align="left" width="466" height="656" alt="image" src="https://github.com/user-attachments/assets/cd7c4596-5dbd-4931-97b2-1f8ac467a1a6" />
+
+The project is built on a structured star-like data model that separates fact tables, dimension tables, and analytical helper tables.
+
+This design ensures correct filtering behavior, scalability, and seamless integration with Python visuals.
+
+### Fact tables
+
+- ***food_security_index_data***
+Core fact table for Food Security Index construction.
+Contains normalized indicator values at the country–year level.
+
+- ***model_data***
+Fact table with independent variables used for econometric modeling.
+Stores raw and normalized values by country, year, and indicator.
+
+- ***python_input***
+Unified analytical table created specifically for Python visuals.
+Combines index components and model variables to bypass Power BI filtering limitations across multiple fact tables.
+
+### Dimension tables
+
+- ***country_name***
+Country reference table (ISO-3 → country name).
+Used for geographic analysis and filtering.
+
+- ***years***
+Time dimension table enabling consistent temporal filtering.
+
+- ***indicator_name_index***
+Metadata table for indicators used in Food Security Index construction
+(names, categories, dimensions).
+
+- ***indicator_name_model***
+Metadata table for independent variables used in the regression model.
+
+- ***indicator_directory***
+Unified indicator directory used for slicers.
+Enables joint control of indicators for both index construction and modeling.
+
+### Relationships and design logic
+
+- All fact tables are connected to shared dimension tables (***country_name, years***) using one-to-many relationships.
+- Indicator metadata tables are linked via indicator codes to ensure consistent categorization and weighting.
+- The ***python_input*** table acts as a controlled analytical layer, allowing Python visuals to fully respect slicer context.
+- Bidirectional filtering is used selectively where necessary to support interactive index construction.
+
+## Step 3. Data Loading and Transformation in Power BI
 
 The consolidated Excel dataset was imported into Power BI and transformed using Power Query.
 This step prepares the data for index construction and analytical modeling.
@@ -103,7 +151,7 @@ Transformation workflow:
 
 > Power Query (M) scripts used in this step are available in the [`power_query/`](power_query/) directory.
 
-## Step 3. Exploratory Analysis of Independent Variables for Model and Indicators for Calculation of Food Security Index
+## Step 4. Exploratory Analysis of Independent Variables for Model and Indicators for Calculation of Food Security Index
 
 <table>
   <tr>
@@ -231,7 +279,7 @@ The CAGR value is formatted using a percentage scale and explicitly includes a p
 
 > DAX measures used for this dashboard are available in the [`dax/`](dax/) directory.
 
-## Step 4. Interactive Food Security Index Construction
+## Step 5. Interactive Food Security Index Construction
 
 <img width="1279" height="715" alt="image" src="https://github.com/user-attachments/assets/5b77784b-28d5-4d83-8ee5-9bb7e250fe05" />
 
@@ -336,7 +384,7 @@ The index calculation logic is implemented using custom DAX measures that respon
 
 The methodological description above reflects the conceptual logic of the index, independent of its technical implementation.
 
-## Step 5. Data Preparation for Regression Analysis
+## Step 6. Data Preparation for Regression Analysis
 This step focuses on preparing a unified and consistent dataset for subsequent regression and econometric analysis.
 
 All transformations are performed within Power BI using calculated tables to ensure full integration with the interactive analytical workflow. DAX formulas for calculated table are lockated in the [`dax/`](dax/) directory 
@@ -405,9 +453,7 @@ As a result of this step:
 The transformations described above are implemented using calculated tables and conditional logic.
 The conceptual structure of the prepared dataset is independent of the specific implementation syntax and can be reproduced in other analytical environments.
 
-
-
-## Step 6. Panel Data Modeling with Country and Time Effects
+## Step 7. Panel Data Modeling with Country and Time Effects
 <img width="1278" height="718" alt="image" src="https://github.com/user-attachments/assets/93c09d1f-db02-417f-9ef8-9918970045ad" />
 
 This step implements an econometric panel data model to quantify the relationship between the constructed Food Security Index and selected socio-economic, political, and environmental factors.
@@ -573,7 +619,7 @@ res = model.fit()
     eq_parts = [fmt(params['const'])]
 ```
 
-## Step 7. Model Analysis
+## Step 8. Model Analysis
 
 ### Regression Equation Construction
 
@@ -779,7 +825,9 @@ The correlation matrix is visualized using a custom diverging color scale, where
 ```python
 custom_cmap = mcolors.LinearSegmentedColormap.from_list(
     "custom_corr",
-    [(1, 0, 0), (1, 1, 0), (0, 0.6, 0)]
+    [(1.0, 0.0, 0.0),
+    (1.0, 1.0, 0.0),
+    (0.0, 0.6, 0.0)]
 )
 ```
 Numeric correlation values are displayed directly within each matrix cell to support precise interpretation.
@@ -1112,7 +1160,8 @@ df_index = df[df['model_type'] == 'index'].copy()
 Category-based weights are applied to rebuild the dependent variable:
 
 ```python
-weights = {cat: (1 / n_cat) / ...}
+weights = {cat: (1 / n_cat) / df_index[df_index['category'] == cat]['ind_name'].nunique()
+           for cat in categories if df_index[df_index['category'] == cat]['ind_name'].nunique() > 0}
 ```
 
 Weighted indicator values are aggregated at the country–year level:
@@ -1175,6 +1224,147 @@ The resulting table highlights:
 - the direction and magnitude of each effect.
 
 The elasticity table is rendered directly within the dashboard to support intuitive comparison across variables.
+
+### Actual vs Theoretical Food Security Index Comparison
+
+<img align="left" width="466" height="514" alt="image" src="https://github.com/user-attachments/assets/9b1542c5-0ada-4ab1-b037-99f484531b2c" />
+
+**Purpose:**
+
+Evaluate how closely the estimated panel model reproduces observed food security outcomes by comparing actual and model-implied (theoretical) Food Security Index values at the country–year level.
+
+**Logic:**
+
+1. Reconstruction of the actual Food Security Index
+
+The observed Food Security Index (fsi_gen) is dynamically reconstructed using normalized index components and category-based weights, ensuring consistency with previous analytical steps.
+
+```python
+df_index = df[df['model_type'] == 'index'].copy()
+```
+
+Category weights are computed dynamically:
+
+```python
+weights = {cat: (1 / n_cat) / ...}
+```
+
+Weighted indicator contributions are aggregated at the country–year level:
+
+```python
+fsi_df = df_index.groupby(['iso_3', 'year'])['fsi_part'].sum()
+```
+
+2. Estimation of the panel data model
+
+Independent variables are reshaped, standardized, and combined with the reconstructed index to estimate a Random Effects panel model with country-specific effects.
+
+```python
+model = RandomEffects(y, X)
+res = model.fit()
+```
+
+3. Construction of the theoretical Food Security Index
+
+The theoretical Food Security Index is computed as the linear prediction of the estimated model:
+
+```python
+data_scaled['fsi_theor'] = np.dot(X, res.params)
+```
+
+This yields a model-implied index value for each country–year observation, directly comparable to the observed index.
+
+4. Scatter-based comparison
+
+Actual and theoretical index values are paired at the country–year level and visualized using a scatter plot:
+
+```python
+plot_df = data_scaled.reset_index()[['iso_3','year','fsi_gen','fsi_theor']]
+```
+
+Each point represents a single country–year observation, enabling assessment of overall fit and dispersion.
+
+5. Non-parametric dependency line
+
+To highlight the underlying relationship between actual and theoretical values, a LOWESS (locally weighted smoothing) curve is fitted:
+
+```python
+lowess_fit = lowess(plot_df['fsi_gen'], plot_df['fsi_theor'], frac=0.3)
+```
+
+The smoothed dependency line captures the average trend without imposing a strict linear assumption, helping to identify systematic deviations between modeled and observed values.
+
+6. Interpretation
+
+A close alignment of points along the smoothed dependency line indicates good model performance in reproducing observed food security outcomes.
+
+Systematic deviations may point to:
+- omitted factors;
+- nonlinear relationships;
+- country-specific or temporal effects not captured by the model.
+
+### Country Effects (μᵢ) and Time Effects (λₜ)
+
+These two tables represent the unobserved components of the panel model, providing additional insight into structural country-specific differences and common time-related effects that are not directly explained by the selected independent variables.
+
+Due to the large number of observations (54 countries and multiple years), both effects are displayed using native Power BI table visuals, as Python visuals do not support scrolling and cannot efficiently display large tables within a dashboard.
+
+### Country Effects (μᵢ)
+
+<img align="left" width="460" height="364" alt="image" src="https://github.com/user-attachments/assets/f29d1a6d-61ba-454a-922f-1713f5bb8714" />
+
+**Purpose:**
+
+Capture country-specific structural deviations in food security that persist over time and are not explained by the selected model factors.
+
+**Logic:**
+
+- The Food Security Index is dynamically reconstructed using category-based weights.
+- For each country, the index is averaged across all available years.
+- A global benchmark is computed as the average index across all country–year observations.
+- The country effect is defined as the deviation of a country’s long-term average from the global benchmark.
+
+<div align="center">
+  
+***μᵢ = average FSI of country i − global average FSI***
+
+</div>
+
+**Data used:**
+- **food_security_index_data** - normalized Food Security Index components at the country–year level;
+- **indicator_name_index** - indicator categories for dynamic weighting;
+- **indicator_directory** - controls active index dimensions via slicers.
+
+### Time Effects (λₜ)
+
+<img align="left" width="250" height="356" alt="image" src="https://github.com/user-attachments/assets/1aaae609-bbf4-4eb8-bef6-5c157da15cbb" />
+
+**Purpose:**
+
+Identify common temporal shocks or trends affecting food security across all countries.
+
+**Logic:**
+
+- The Food Security Index is reconstructed consistently with all previous steps.
+- For each year, the index is averaged across all countries.
+- The time effect is defined as the deviation of the yearly average from the global benchmark.
+
+<div align="center">
+  
+***λₜ = average FSI in year t − global average FSI***
+
+</div>
+
+**Data used:**
+- **food_security_index_data** - normalized Food Security Index components at the country–year level;
+- **indicator_name_index** - indicator categories for dynamic weighting;
+- **indicator_directory** - controls active index dimensions via slicers.
+
+> DAX measures used to compute country and time effects are available in the
+[`dax/`](dax/) directories.
+
+> Python scripts used for model estimation, validation, and visualization are stored in the
+[`python_scripts/`](python_scripts/) directory.
 
 # Data Sources
 The indicators used in this project were collected from internationally recognized and publicly available data sources.
